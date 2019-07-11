@@ -1,0 +1,365 @@
+<html>
+    <script src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>
+    <script src="https://canvasjs.com/assets/script/jquery-ui.1.11.2.min.js"></script>
+    <script src="https://canvasjs.com/assets/script/jquery.canvasjs.min.js"></script>
+    <script src = “jquery-1.10.1.min.js”  type=“text/javascript”>s</script>
+
+    <head>
+        <style>
+            .avatar{
+                vertical-align: middle;
+                width: 50px;
+                height: 50px;
+                border-radius: 50;
+            }
+            body{
+                background-image: url(The_Krusty_Krab_in_The_SpongeBob_SquarePants_Movie.png);
+                background-size: cover;
+            }
+            
+            #header{
+                background-color: lightyellow;
+                background-size: 100px;
+                font-size: 30px;
+                color: darkred;
+                font-family: verdana;
+                text-align: center;
+            }
+            
+            #login_page{
+                text-align: center;
+                margin: 0 auto;
+                display: block;
+            }
+            
+            #dashboard{
+                background-color: lightyellow;
+                width: 100%;
+                height: auto;
+                margin: 0 auto;
+                display:none;
+            }
+            
+            #dashboard_tab{
+                font-size: 20px;
+                width: 100%;
+                color: darkred;
+                font-family: verdana;
+                text-align: center;
+                display: inline-flex;
+                margin: auto;
+            }
+            
+            #dashboard_display{
+                background-color: lightgoldenrodyellow;
+                width: 100%;
+                height: inherit;
+                display: flex;
+                justify-content: space-around;
+            }
+            
+            #dashboard_display2{
+               background-color: lightgoldenrodyellow;
+                width: 100%;
+                height: inherit;
+                display: flex;
+                justify-content: space-around;
+            }
+            
+            #dashboard_tabledisplay{
+                background-color: sandybrown;
+                margin-left: 20px;
+                margin-bottom: 20px;
+                display: block;
+                width: 100%;
+                height:500px;
+                overflow: auto;
+            }
+            
+            #dashboard_graphdisplay{
+                background-color: sandybrown;
+                margin-right: 20px;
+                margin-bottom: 20px;
+                width: 100%;
+                height:500px;;
+            }
+            
+            #dashboard_graphdisplay2{
+                background-color: sandybrown;
+                margin-left: 20px;
+                margin-right: 20px;
+                margin-bottom: 20px;
+                width: 100%;
+                height:500px;;
+            }
+            
+            #space{
+                width: 25px;
+                height: 25px;
+            }
+            
+            #buttons{
+                width: 100px;
+            }
+            
+            table, th, td {
+                border: solid 1px #DDD;
+                border-collapse:separate separate;
+                width: 100%;
+                padding: 2px 3px;
+                text-align: center;
+                font: helvetica;
+            
+
+        </style>
+    
+        <script>
+            function login(){
+                console.log("Button pressed");
+                var a = document.getElementById("login").elements[0].value
+                var b = document.getElementById("login").elements[1].value
+                
+                console.log(a,b)
+                
+                if(a == "admin" && b == "p@ssword"){
+                    alert("Login Successful");
+                    document.getElementById("login").style.display = "none"
+                    document.getElementById("dashboard").style.display = "block"
+                    document.getElementById("login").elements[0].value = ''
+                    document.getElementById("login").elements[1].value = ''
+                    
+                }
+                else{
+                    alert("Login Failed");
+                }
+            }
+            
+            function logout(){
+                console.log("Logged out")
+                alert("Logout Successful")
+                
+                document.getElementById("login").style.display = "block"
+                document.getElementById("dashboard").style.display = "none"
+            }
+            
+            function onUpload(event) {
+                var reader = new FileReader();
+                reader.onload = onReaderLoad;
+                reader.readAsText(document.getElementById('inputGroupFile01').files[0]);
+            }
+
+            function onReaderLoad(event){
+                console.log(event.target.result);
+                var obj = JSON.parse(event.target.result);
+                console.log(obj)
+                
+                var col = [];
+                
+                for (var i = 0; i < obj.sales.length; i++) {
+                    for (var key in obj.sales[i]) {
+                        console.log(obj.sales[i])
+                        if (col.indexOf(key) === -1) {
+                            col.push(key);
+                        }
+                    }
+                }
+
+               // CREATE DYNAMIC TABLE.
+                var table = document.createElement("table");
+
+                // CREATE HTML TABLE HEADER ROW USING THE EXTRACTED HEADERS ABOVE.
+
+                var tr = table.insertRow(-1);                   // TABLE ROW.
+
+                for (var i = 0; i < col.length; i++) {
+                    var th = document.createElement("th");      // TABLE HEADER.
+                    th.innerHTML = col[i];
+                    tr.appendChild(th);
+                }
+
+                // ADD JSON DATA TO THE TABLE AS ROWS.
+                for (var i = 0; i < obj.sales.length; i++) {
+
+                    tr = table.insertRow(-1);
+
+                    for (var j = 0; j < col.length; j++) {
+                        var tabCell = tr.insertCell(-1);
+                        tabCell.innerHTML = obj.sales[i][col[j]];
+                    }
+                }
+
+                // FINALLY ADD THE NEWLY CREATED TABLE WITH JSON DATA TO A CONTAINER.
+                var divContainer = document.getElementById("showData");
+                divContainer.innerHTML = "";
+                divContainer.appendChild(table);
+                loadStackedColumn(obj)
+                loadLineTime(obj)
+                loadSplineDay(obj)
+            }
+            
+            
+            var dps = []
+            
+            function loadStackedColumn(obj) {
+                console.log("loadcolumn")
+                var chart = new CanvasJS.Chart("dashboard_graphdisplay",
+                {
+                    animationEnabled: true,
+                    title:{
+                        text: "Krusty Krab Watchlist"
+                    },
+                    axisY:{
+                        title:"Burgers sold by Species",
+                        valueFormatString: "#",
+                    },
+                    axisX:{
+                        title:"Species"
+                    },
+                    data: [
+                        {
+                            type: "stackedBar",
+                            legendText: "Krusty Combo",
+                            showInLegend: "true",
+                            dataPoints: [
+                                {  y: obj.burger_by_species['Krusty Combo']['leatherback turtle'],     label: "LB Turtle"},
+                                {  y: obj.burger_by_species['Krusty Combo']['salmon'],     label: "Salmon"},
+                                {  y: obj.burger_by_species['Krusty Combo']['seahorse'],     label: "Seahorse"},
+                                {  y: obj.burger_by_species['Krusty Combo']['coral'],    label: "Coral"},
+                                {  y: obj.burger_by_species['Krusty Combo']['giant clam'],     label: "Giant Clam"},
+                                {  y: obj.burger_by_species['Krusty Combo']['gray whale'],     label: "Gray Whale"},
+                                {  y: obj.burger_by_species['Krusty Combo']['sea lion'],     label: "Sea Lion"},
+                            ]
+                        },  
+                        {
+                            type: "stackedBar",
+                            legendText: "Krabby Pattie",
+                            showInLegend: "true",
+                                dataPoints: [
+                                {  y: obj.burger_by_species['Krabby Pattie']['leatherback turtle'],     label: "LB Turtle"},
+                                {  y: obj.burger_by_species['Krabby Pattie']['salmon'],     label: "Salmon"},
+                                {  y: obj.burger_by_species['Krabby Pattie']['seahorse'],     label: "Seahorse"},
+                                {  y: obj.burger_by_species['Krabby Pattie']['coral'],    label: "Coral"},
+                                {  y: obj.burger_by_species['Krabby Pattie']['giant clam'],     label: "Giant Clam"},
+                                {  y: obj.burger_by_species['Krabby Pattie']['gray whale'],     label: "Gray Whale"},
+                                {  y: obj.burger_by_species['Krabby Pattie']['sea lion'],     label: "Sea Lion"},
+                            ]
+                        },  
+                        {
+                            type: "stackedBar",
+                            legendText: "Krabby Deluxe",
+                            showInLegend: "true",
+                            indexLabel: "#total",
+                            yValueFormatString: "#",
+                            indexLabelPlacement: "outside",
+                            dataPoints: [
+                                {  y: obj.burger_by_species['Krusty Deluxe']['leatherback turtle'],     label: "LB Turtle"},
+                                {  y: obj.burger_by_species['Krusty Deluxe']['salmon'],     label: "Salmon"},
+                                {  y: obj.burger_by_species['Krusty Deluxe']['seahorse'],     label: "Seahorse"},
+                                {  y: obj.burger_by_species['Krusty Deluxe']['coral'],    label: "Coral"},
+                                {  y: obj.burger_by_species['Krusty Deluxe']['giant clam'],     label: "Giant Clam"},
+                                {  y: obj.burger_by_species['Krusty Deluxe']['gray whale'],     label: "Gray Whale"},
+                                {  y: obj.burger_by_species['Krusty Deluxe']['sea lion'],     label: "Sea Lion"},
+                            ]
+                        }
+
+                    ]
+                });
+                chart.render();
+            }
+            
+            function loadLineTime(obj){
+                var chart = new CanvasJS.Chart("dashboard_graphdisplay2",
+                {
+                  animationEnabled: true,
+                  zoomEnabled: true,
+                  title:{
+                  text: " Orders made every 1 hour"
+                  },
+                   data: [
+                  {
+                    type: "spline",
+
+                    dataPoints: dps
+                  }
+                  ]
+                });
+                var totalhourarr = []
+                obj.sales.forEach(function(item){
+                    var d = new Date(item.datetime)
+                    var n
+                    if (parseInt(d.getHours()) <= 9)
+                        n = '0' + d.getHours()
+                    else n = d.getHours()
+
+                    totalhourarr.push(n)
+                })
+                var hours = [], custperhour = [], prev
+                totalhourarr.sort()
+                totalhourarr.forEach(function(item){
+                    if(item !== prev){
+                        hours.push(item)
+                        custperhour.push(1)
+                    }
+                    else {
+                        custperhour[custperhour.length-1]++
+                    }
+                    prev = item
+                })
+                for(var i = 0; i < hours.length; i++){
+                    dps.push({label: hours[i], y:custperhour[i]})
+                }
+                chart.render();
+            }
+        </script>
+    
+    </head>
+    
+    <body>
+        
+        <l1 id="login_page">
+        <h1 id="header">Krusty Krab Insights Dashboard</h1>
+                <form id="login">
+                    <input type ="text" name="Username" value = "Username">
+                    <h1> </h1>
+                    <input type ="password" name="Password" value = "password">
+                    <h1> </h1>
+                    <button type="button" onclick="login(Username, Password)">Submit</button>
+                </form>
+        </l1>
+        
+        <br>
+        
+        <div id="dashboard">
+            <div id="dashboard_tab">
+                <input onchange="onUpload()" type="file" value="Add Data" id="inputGroupFile01" style="width: 40%">
+                <div id="space"></div>
+                <div id="space"></div>
+                <div id="space"></div>
+                <div id="space"></div>
+                <div id="space"></div>
+                <div id="space"></div>
+                <div id="space"></div>
+                <div id="space"></div>
+                <div id="space"></div>
+                <div id="space"></div>
+                <div id="space"></div>
+                <input type="button" onclick="logout()" value="Logout" style="width: 40%">
+            </div>
+            <div id="space"></div>
+             <div id="dashboard_display">
+                <div id="dashboard_tabledisplay">
+                    <table id="showData"></table>
+                </div>
+                <div id="space"></div>
+                <div id="dashboard_graphdisplay"></div> 
+            </div>
+                 <div id="space"></div>
+                <div id="dashboard_display2">
+                    <div id="dashboard_graphdisplay2"></div>        
+            </div>
+        </div>
+       
+
+    </body>
+
+</html>
