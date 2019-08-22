@@ -39,12 +39,12 @@
                 cursor: pointer;
             }
 
-            #Leaderboards{
+            #BackToMain{
                 float: left;
                 display: inline-block;
                 margin: 0 auto;
             }
-            #Leaderboards input[type = "submit"]{
+            #BackToMain input[type = "submit"]{
                 font-family: "nintendo";
                 background-color: Transparent;
                 outline: none;
@@ -145,60 +145,62 @@
                 border-color: black;
             }
             
-            #Logout{
-                float: right;
-            }
-            #Logout input[type= "submit"]{
+            #FilterButtons input[type="button"]{
                 font-family: "nintendo";
                 background-color: Transparent;
                 outline: none;
-                font-size: 25px;
+                font-size: 30px;
                 border-color: transparent;
                 font-weight: bold;
                 padding: 12px 28px;
                 color: white;
             }
-    
-            #wrap {
-                float: left;
-                position: relative;
-                left: 50%;
-            }
-            #content {
-                float: left;
-                position: relative;
-                left: -50%;
-            }
             
-            #GameBoxHeader{
-                display: block; 
-                padding: 35px 0;
-                text-align: center;
-            }
-            #DifficultyButton input[type = "button"]{
+            #FilterButtons input[type="submit"]{
                 font-family: "nintendo";
-                font-size: 30px;
-                padding : 20px 100px;
-                opacity: 0.8;
-            }
-            #DifficultyButton input[type = "submit"]{
-                font-family: "nintendo";
+                background-color: Transparent;
                 outline: none;
                 font-size: 30px;
                 border-color: transparent;
                 font-weight: bold;
-                padding: 15px 70px;
+                padding: 12px 28px;
+                color: white;
+            }
+            
+            #space{
+                height: 30px;
+            }
+                
+            #UserDashboard{
+                display: block;
+                width: 100%;
             }
             
             p1{
-                font-size: 20px;
+                font-family: "nintendo";
+                font-size: 30px;
                 font-weight: bolder;
                 padding: 12px 28px;
                 color: white;
             }
             
-        
-        
+            th{
+                font-family: "nintendo";
+                color: white;
+                padding: 5px;
+                font-size: 40px;
+                text-align: center;
+                background-color:#1E50FA;
+                
+            }
+            
+            td{
+                font-family: "nintendo";
+                font-size: 25px;
+                background-color:beige;
+                text-align: center;
+                
+            }
         </style>
         
         <script>
@@ -220,26 +222,26 @@
                 document.getElementById("Login").style.display = "none"
             }
             function changeEasy(){
-                const str2 = document.getElementById("selected")
-                document.getElementById("easyB").style.opacity = 0.5
-                document.getElementById("medB").style.opacity = 1.0
-                document.getElementById("hardB").style.opacity = 1.0
+                const str2 = document.getElementById("difficultyfilter")
+                document.getElementById("easy").style.color = "green"
+                document.getElementById("medium").style.color = "white"
+                document.getElementById("hard").style.color = "white"
                 
                 str2.value = "EASY"
             }
             function changeMedium(){
-                const str2 = document.getElementById("selected")
-                document.getElementById("easyB").style.opacity = 1.0
-                document.getElementById("medB").style.opacity = 0.5
-                document.getElementById("hardB").style.opacity = 1.0
+                const str2 = document.getElementById("difficultyfilter")
+                document.getElementById("easy").style.color = "white"
+                document.getElementById("medium").style.color = "yellow"
+                document.getElementById("hard").style.color = "white"
                 
                 str2.value = "MEDIUM"
             }
             function changeHard(){
-                const str2 = document.getElementById("selected")
-                document.getElementById("easyB").style.opacity = 1.0
-                document.getElementById("medB").style.opacity = 1.0
-                document.getElementById("hardB").style.opacity = 0.5
+                const str2 = document.getElementById("difficultyfilter")
+                document.getElementById("easy").style.color = "white"
+                document.getElementById("medium").style.color = "white"
+                document.getElementById("hard").style.color = "red"
                 
                 str2.value = "HARD"
             }
@@ -247,9 +249,11 @@
     
     </head>
     <body>
-        <div id="NavBar">
-            <form id="Leaderboards" method="post" action="Leaderboards">
-                <input type="submit" value="Leaderboards">
+         <div id="NavBar">
+             <img src="Logo2.png" style="height:100%;text-align: center; display: inline-block;float: left;">
+             
+            <form id="BackToMain" method="post" action="BackToMain">
+                <input type="submit" value="Back To Main Page">
             </form>
             
             <form id="BonusMode" method="post" action="BonusMode">
@@ -276,21 +280,36 @@
             </form>
         </div>
         
-        <img src="Logo2.png" style="width:100%">
-        
-        <div id="GameBoxHeader">
-            <form id="DifficultyButton" method="post" action="startGame">
-            <input type="button" id="easyB" value="EASY" style="background-color: darkseagreen" id="Easy" onclick="changeEasy()">
-            <input type="button" id="medB" value="MEDIUM" style="background-color: goldenrod"  id="Medium" onclick="changeMedium()">
-            <input type="button" id="hardB" value="HARD" style="background-color: indianred"  id="Hard" onclick="changeHard()">
-            <input type="text" id="selected" name = "selected" style="display:none" readonly>
-            <br>
-            <br>
-                
-            <input type="submit" value="Start Game">
+        <div id="space"></div>
+            
+        <form id="FilterButtons" style="text-align: center" action="ChangeFilter" method="post">
+            <input type="button" id="easy" value="EASY" onclick="changeEasy()">
+            <input type="button" id="medium" value="MEDIUM" onclick="changeMedium()">
+            <input type="button" id="hard"  value="HARD" onclick="changeHard()">
+            <input type="hidden" name="difficulty" id="difficultyfilter" value="">
+            <input type="submit" value="Filter">
         </form>
-        
-        
+            
+        <div id="UserDashboard">
+                <table style="text-align: center; width: 100%;" name="leaderboardTable">
+                        <tbody>
+                            <tr>
+                                <th> Player Name</th>
+                                <th> Difficulty</th>
+                                <th> Score</th>
+                            </tr>
+                            
+                            {{#each data}}
+                            <tr>
+                                <td>{{playerusername}}</td>
+                                <td>{{difficulty}}</td>
+                                <td>{{score}}</td>
+                            </tr>
+                            {{/each}}
+                            
+                        </tbody>
+                    </table>    
+                <br>
         </div>
     </body>
 </html>
