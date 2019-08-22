@@ -19,7 +19,7 @@ app.use(session({
 }))
 
 mongoose.Promise = global.Promise
-mongoose.connect("mongodb://localhost:27017/mpDB", {
+mongoose.connect("mongodb+srv://fan34:fun34@type-racer-mli3n.mongodb.net/test?retryWrites=true&w=majority", {
     useNewUrlParser:true,
     useFindAndModify: false
 })
@@ -193,7 +193,6 @@ app.post("/ChangeFilter", urlencoder, (req,res)=>{
     console.log(filter)
     if(req.session.un){
         score.find({difficulty: filter}).exec(function(err,scores){
-            console.log(scores)
             res.render(__dirname + "/views/Leaderboards_User.hbs",{
                 us: req.session.un,
                 data :scores
@@ -202,7 +201,7 @@ app.post("/ChangeFilter", urlencoder, (req,res)=>{
     }
     else{
        score.find({difficulty: filter}).exec(function(err,scores){
-            console.log(scores)
+           console.log(scores)
             res.render(__dirname + "/views/Leaderboards.hbs",{
             data :scores
             })
@@ -408,8 +407,5 @@ app.post("/savescore", urlencoder, (req,res)=>{
 })
 
 
-app.listen(3000, ()=>{
-    console.log("live at port 3000")
-   
-})
+app.listen(process.env.PORT || 3000)
 
